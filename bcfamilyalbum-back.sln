@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bcfamilyalbum-back", "bcfamilyalbum-back.csproj", "{56A17794-F412-45AB-ACFD-BE9A6B9C2ABD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56A17794-F412-45AB-ACFD-BE9A6B9C2ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56A17794-F412-45AB-ACFD-BE9A6B9C2ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56A17794-F412-45AB-ACFD-BE9A6B9C2ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56A17794-F412-45AB-ACFD-BE9A6B9C2ABD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8D7EDFE4-9622-4E5C-B5AC-0C7F8B74CD74}
+	EndGlobalSection
+EndGlobal
