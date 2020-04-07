@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bcfamilyalbum_back.Interfaces
 {
-    interface IAlbumInfoProvider
+    public interface IAlbumInfoProvider
     {
         Task<List<TreeItem>> GetAlbumInfo();
     }
