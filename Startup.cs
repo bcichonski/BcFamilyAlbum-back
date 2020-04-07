@@ -17,6 +17,8 @@ namespace bcfamilyalbum_back
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,6 +29,7 @@ namespace bcfamilyalbum_back
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddControllers();
             services.AddSingleton<IAlbumInfoProvider, AlbumInfoProvider>();
         }
@@ -38,6 +41,9 @@ namespace bcfamilyalbum_back
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder =>
+                builder.WithOrigins("http://localhost:3000"));
 
             app.UseHttpsRedirection();
 
