@@ -4,16 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bcfamilyalbum_back.Services
 {
     public class AlbumInfoProvider : IAlbumInfoProvider
     {
-        List<TreeItem> _albumInfo;
+        SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        TreeItem _albumInfoRoot;
+        ConcurrentDictionary<int, TreeItem> _cache;
         string _albumRootPath;
         ILogger<AlbumInfoProvider> _logger;
 
@@ -21,6 +25,7 @@ namespace bcfamilyalbum_back.Services
         {
             _logger = logger;
             _albumRootPath = config.GetValue<string>("AppSettings:AlbumRootPath");
+            _cache = new ConcurrentDictionary<int, TreeItem>();
 
             if (string.IsNullOrWhiteSpace(_albumRootPath))
             {
@@ -33,68 +38,82 @@ namespace bcfamilyalbum_back.Services
             }
         }
 
-        public async Task<List<TreeItem>> GetAlbumInfo()
+        public async Task<TreeItem> GetAlbumInfo()
         {
-            if (_albumInfo == null)
+            if (_albumInfoRoot == null)
             {
-                await Task.Run(() => GetAlbumInfoInternal());
+                await _semaphore.WaitAsync();
+                try
+                {
+                    if (_albumInfoRoot == null)
+                    {
+                        await Task.Run(() => GetAlbumInfoInternal());
+                    }
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
-            return _albumInfo;
+
+            return _albumInfoRoot;
         }
 
         private void GetAlbumInfoInternal()
         {
             _logger.LogInformation("Scanning album {_albumRootPath} structure", _albumRootPath);
-
-            Queue<string> directoryQueue = new Queue<string>();
-            directoryQueue.Enqueue(_albumRootPath);
-            Dictionary<string, TreeItem> cache = new Dictionary<string, TreeItem>();
+            _cache.Clear();
+            Queue<TreeItem> directoryQueue = new Queue<TreeItem>();
             int nextId = 0;
+
+            var tempRoot = new DirectoryTreeItem(nextId++, null, "the album", _albumRootPath);
+            directoryQueue.Enqueue(tempRoot);
+            _cache[tempRoot.Id] = tempRoot;
 
             while (directoryQueue.Count > 0)
             {
-                var currentDir = directoryQueue.Dequeue();
-                string itemName = GetDirectoryName(currentDir);
-                int parentNodeId = GetParentNodeId(cache, currentDir);
-
-                var currentNode = cache[currentDir] = new TreeItem(nextId++, parentNodeId, itemName, currentDir);
+                var currentNode = directoryQueue.Dequeue();
                 bool errorLogged = false;
 
                 try
                 {
-                    var files = Directory.GetFiles(currentDir, "*", SearchOption.TopDirectoryOnly)
-                        .Select(filepath =>
-                            cache[filepath] = new TreeItem(
-                                nextId++,
-                                currentNode.Id,
-                                Path.GetFileName(filepath),
-                                filepath))
-                        .ToList();//force errors here                     
+                    var files = Directory.GetFiles(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
+                    foreach (var filepath in files)
+                    {
+                        var id = nextId++;
+                        _cache[id] = new FileTreeItem(
+                            id,
+                            currentNode,
+                            Path.GetFileName(filepath),
+                            filepath);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error enumerating files in {currentDir}: {ex.Message}");
+                    _logger.LogError(ex, $"Error enumerating files in {currentNode.FullPath}: {ex.Message}");
                     errorLogged = true;
                 }
 
                 try
                 {
-                    var directories = Directory.EnumerateDirectories(currentDir, "*", SearchOption.TopDirectoryOnly);
+                    var directories = Directory.EnumerateDirectories(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
                     foreach (var dir in directories)
                     {
-                        directoryQueue.Enqueue(dir);
+                        var childNode = new DirectoryTreeItem(nextId++, currentNode, dir);
+                        _cache[childNode.Id] = childNode;
+                        directoryQueue.Enqueue(childNode);
                     }
                 }
                 catch (Exception ex)
                 {
                     if (!errorLogged)
                     {
-                        _logger.LogError(ex, $"Error enumerating subdirectories in {currentDir}: {ex.Message}");
+                        _logger.LogError(ex, $"Error enumerating subdirectories in {currentNode.FullPath}: {ex.Message}");
                     }
                 }
             }
 
-            _albumInfo = cache.Values.OrderBy(v => v.Id).ToList();
+            _albumInfoRoot = tempRoot;
         }
 
         private int GetParentNodeId(Dictionary<string, TreeItem> cache, string currentDir)
@@ -116,24 +135,12 @@ namespace bcfamilyalbum_back.Services
             return parentNodeId;
         }
 
-        private string GetDirectoryName(string currentDir)
-        {
-            string itemName;
-            if (currentDir == _albumRootPath)
-            {
-                itemName = "album";
-            }
-            else
-            {
-                itemName = Path.GetFileNameWithoutExtension(Path.TrimEndingDirectorySeparator(currentDir));
-            }
 
-            return itemName;
-        }
 
         public void Invalidate()
         {
-            _albumInfo = null;
+            _albumInfoRoot = null;
+            _cache = null;
         }
     }
 }

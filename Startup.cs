@@ -17,8 +17,6 @@ namespace bcfamilyalbum_back
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,7 +28,10 @@ namespace bcfamilyalbum_back
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
             services.AddSingleton<IAlbumInfoProvider, AlbumInfoProvider>();
         }
 

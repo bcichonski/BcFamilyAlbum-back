@@ -24,7 +24,7 @@ namespace bcfamilyalbum_back.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<TreeItem>> Get()
+        public async Task<TreeItem> Get()
         {
             return await _albumInfoProvider.GetAlbumInfo();
         }

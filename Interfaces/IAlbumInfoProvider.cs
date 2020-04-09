@@ -8,7 +8,7 @@ namespace bcfamilyalbum_back.Interfaces
 {
     public interface IAlbumInfoProvider
     {
-        Task<List<TreeItem>> GetAlbumInfo();
+        Task<TreeItem> GetAlbumInfo();
 
         public void Invalidate();
     }

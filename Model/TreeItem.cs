@@ -7,25 +7,38 @@ namespace bcfamilyalbum_back.Model
 {
     public class TreeItem
     {
-        public TreeItem(int id, int parentId, string name, string fullPath)
+        public TreeItem(int id, TreeItem parent, string name, string fullPath)
         {
             Id = id;
-            ParentId = parentId;
             Name = name;
-            _fullPath = fullPath;
+            Children = null;
+
+            Parent = parent;
+            FullPath = fullPath;
+
+            if(parent != null)
+            {
+                parent.AddChild(this);
+            }
         }
 
-        public int Id { get; set; }
+        public int Id { get; private set; }
 
-        public int ParentId { get; set; }
+        internal TreeItem Parent { get; private set; }
 
-        public string Name { get; set; }
+        public List<TreeItem> Children { get; private set; }
 
-        string _fullPath;
+        public string Name { get; private set; }
 
-        public string GetFullPath()
+        internal string FullPath { get; private set; }
+
+        public void AddChild(TreeItem child)
         {
-            return _fullPath;
+            if(Children == null)
+            {
+                Children = new List<TreeItem>();
+            }
+            Children.Add(child);
         }
     }
 }
