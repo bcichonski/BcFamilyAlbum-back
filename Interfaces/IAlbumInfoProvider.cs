@@ -11,5 +11,6 @@ namespace bcfamilyalbum_back.Interfaces
         Task<TreeItem> GetAlbumInfo();
 
         public void Invalidate();
+        Task<TreeItem> GetItem(int id);
     }
 }

@@ -142,5 +142,16 @@ namespace bcfamilyalbum_back.Services
             _albumInfoRoot = null;
             _cache = null;
         }
+
+        public async Task<TreeItem> GetItem(int id)
+        {
+            var info = await GetAlbumInfo();
+            
+            if(_cache.TryGetValue(id, out TreeItem node))
+            {
+                return node;
+            }
+            return null;
+        }
     }
 }
