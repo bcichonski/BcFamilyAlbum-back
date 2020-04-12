@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace bcfamilyalbum_back.Model
+namespace bcfamilyalbum_api.Model
 {
     public class DirectoryTreeItem : TreeItem
     {

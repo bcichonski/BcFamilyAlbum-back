@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace bcfamilyalbum_back
+namespace bcfamilyalbum_api
 {
     public class Program
     {

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using bcfamilyalbum_back.Interfaces;
-using bcfamilyalbum_back.Services;
+using bcfamilyalbum_api.Interfaces;
+using bcfamilyalbum_api.Services;
+using bcfamilyalbum_db.Interfaces;
+using bcfamilyalbum_db.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace bcfamilyalbum_back
+namespace bcfamilyalbum_api
 {
     public class Startup
     {
@@ -33,6 +35,7 @@ namespace bcfamilyalbum_back
                 options.JsonSerializerOptions.IgnoreNullValues = true;
             });
             services.AddSingleton<IAlbumInfoProvider, AlbumInfoProvider>();
+            services.AddScoped<IFamilyAlbumDataService, AlbumDataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

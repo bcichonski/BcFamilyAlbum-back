@@ -1,10 +1,10 @@
-﻿using bcfamilyalbum_back.Model;
+﻿using bcfamilyalbum_api.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace bcfamilyalbum_back.Interfaces
+namespace bcfamilyalbum_api.Interfaces
 {
     public interface IAlbumInfoProvider
     {
@@ -12,5 +12,9 @@ namespace bcfamilyalbum_back.Interfaces
 
         public void Invalidate();
         Task<TreeItem> GetItem(int id);
+
+        string AlbumDbPath { get; }
+
+        string GetRelativePath(string path);
     }
 }

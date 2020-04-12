@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using bcfamilyalbum_back.Interfaces;
-using bcfamilyalbum_back.Model;
+using bcfamilyalbum_api.Interfaces;
+using bcfamilyalbum_api.Model;
+using bcfamilyalbum_db.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 
-namespace bcfamilyalbum_back.Controllers
+namespace bcfamilyalbum_api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -20,10 +21,16 @@ namespace bcfamilyalbum_back.Controllers
 
         readonly IAlbumInfoProvider _albumInfoProvider;
 
-        public AlbumInfoController(ILogger<AlbumInfoController> logger, IAlbumInfoProvider albumInfoProvider)
+        readonly IFamilyAlbumDataService _dbService;
+
+        public AlbumInfoController(
+            ILogger<AlbumInfoController> logger, 
+            IAlbumInfoProvider albumInfoProvider,
+            IFamilyAlbumDataService dbService)
         {
             _logger = logger;
             _albumInfoProvider = albumInfoProvider;
+            _dbService = dbService;
         }
 
         [HttpGet]
@@ -38,7 +45,7 @@ namespace bcfamilyalbum_back.Controllers
         public async Task<IActionResult> GetItem(string id)
         {
             var item = await _albumInfoProvider.GetItem(int.Parse(id));
-            if(item != null)
+            if (item != null)
             {
                 if (item is FileTreeItem)
                 {
@@ -68,6 +75,18 @@ namespace bcfamilyalbum_back.Controllers
         {
             var ext = Path.GetExtension(fullPath).ToLowerInvariant();
             return _VideoFormats.Any(v => v == ext);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItem(string id)
+        {
+            var item = await _albumInfoProvider.GetItem(int.Parse(id));
+            if (item != null)
+            {
+                await _dbService.MarkFileAsDeleted(_albumInfoProvider.GetRelativePath(item.FullPath));
+                return Ok();
+            }
+            throw new Exception($"File {id} not found.");
         }
     }
 }

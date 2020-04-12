@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "bcfamilyalbum_back": {
+    "bcfamilyalbum_api": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",

@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>bcfamilyalbum_back</RootNamespace>
+    <RootNamespace>bcfamilyalbum_api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\bcfamilyalbum-db\bcfamilyalbum-db.csproj" />
   </ItemGroup>
 
 

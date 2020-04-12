@@ -1,5 +1,5 @@
-﻿using bcfamilyalbum_back.Interfaces;
-using bcfamilyalbum_back.Model;
+﻿using bcfamilyalbum_api.Interfaces;
+using bcfamilyalbum_api.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,15 +11,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace bcfamilyalbum_back.Services
+namespace bcfamilyalbum_api.Services
 {
     public class AlbumInfoProvider : IAlbumInfoProvider
     {
+        const string AlbumDbFileName = "album.db";
         SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         TreeItem _albumInfoRoot;
         ConcurrentDictionary<int, TreeItem> _cache;
         string _albumRootPath;
         ILogger<AlbumInfoProvider> _logger;
+
+        public string AlbumDbPath => Path.Combine(_albumRootPath, AlbumDbFileName);
 
         public AlbumInfoProvider([FromServices] IConfiguration config, [FromServices] ILogger<AlbumInfoProvider> logger)
         {
@@ -152,6 +155,11 @@ namespace bcfamilyalbum_back.Services
                 return node;
             }
             return null;
+        }
+
+        public string GetRelativePath(string path)
+        {
+            return Path.GetRelativePath(path, _albumRootPath);
         }
     }
 }
