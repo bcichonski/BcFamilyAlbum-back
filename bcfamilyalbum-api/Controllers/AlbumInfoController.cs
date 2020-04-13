@@ -83,6 +83,7 @@ namespace bcfamilyalbum_api.Controllers
             var item = await _albumInfoProvider.DeleteItem(int.Parse(id));
             if (item != null)
             {
+                await _dbService.EnsureReadiness();
                 await _dbService.MarkFileAsDeleted(_albumInfoProvider.GetRelativePath(item.FullPath));
                 return Ok();
             }

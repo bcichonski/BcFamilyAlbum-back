@@ -160,7 +160,7 @@ namespace bcfamilyalbum_api.Services
 
         public string GetRelativePath(string path)
         {
-            return Path.GetRelativePath(path, _albumRootPath);
+            return Path.GetRelativePath(_albumRootPath, path);
         }
 
         public async Task<TreeItem> DeleteItem(int id)
@@ -170,6 +170,7 @@ namespace bcfamilyalbum_api.Services
             if(node != null)
             {
                 node.MoveTo(Path.Combine(_albumRootPath, RemovedFilesDirectory));
+                return node;
             }
 
             return null;

@@ -14,19 +14,18 @@ namespace bcfamilyalbum_api.Model
 
         internal override void MoveTo(string newPath)
         {
-            if(!Directory.Exists(newPath))
+            if (!Directory.Exists(newPath))
             {
                 Directory.CreateDirectory(newPath);
-                var newName = Path.Combine(newPath, Path.GetFileName(this.FullPath));
-
-                if(!File.Exists(newName))
-                {
-                    File.Move(this.FullPath, newName);
-                    return;
-                }
-                throw new Exception($"File {newName} already exists");
             }
-            throw new Exception($"Path {newPath} not found");
+            var newName = Path.Combine(newPath, Path.GetFileName(this.FullPath));
+
+            if(!File.Exists(newName))
+            {
+                File.Move(this.FullPath, newName);
+                return;
+            }
+            throw new Exception($"File {newName} already exists");
         }
     }
 }

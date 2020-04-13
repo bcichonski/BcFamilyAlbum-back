@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace bcfamilyalbum_db
 {
@@ -8,6 +10,8 @@ namespace bcfamilyalbum_db
         const string Schema = "bcfamilyalbum";
 
         string _connectionString;
+
+        static bool MigrationsChecked = false;
 
         public FamilyAlbumDbContext(string dbpath)
         {
@@ -19,7 +23,7 @@ namespace bcfamilyalbum_db
         {
             optionsBuilder.UseSqlite(_connectionString, options =>
             {
-                options.MigrationsAssembly(typeof(FamilyAlbumDbContext).AssemblyQualifiedName);
+                options.MigrationsAssembly("bcfamilyalbum-db");
             });
             base.OnConfiguring(optionsBuilder);
         }
@@ -42,6 +46,18 @@ namespace bcfamilyalbum_db
                 entity.Property(e => e.MovingTimestamp).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
             base.OnModelCreating(modelBuilder);
+        }
+
+        public async Task EnsureDatabaseIsUpgraded()
+        {
+            if (!MigrationsChecked)
+            {
+                if ((await this.Database.GetPendingMigrationsAsync()).Any())
+                {
+                    await this.Database.MigrateAsync();
+                }
+                MigrationsChecked = true;
+            }
         }
     }
 }

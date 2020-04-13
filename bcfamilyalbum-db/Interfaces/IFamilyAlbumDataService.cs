@@ -7,6 +7,7 @@ namespace bcfamilyalbum_db.Interfaces
 {
     public interface IFamilyAlbumDataService
     {
+        Task EnsureReadiness();
         Task MarkFileAsDeleted(string relativePath);
         List<string> GetDeletedFiles();
 

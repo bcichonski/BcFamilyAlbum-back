@@ -1,4 +1,5 @@
 ﻿using bcfamilyalbum_db.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,18 @@ namespace bcfamilyalbum_db.Services
             _albumDbPath = dbPath;
         }
 
-        public List<string> GetDeletedFiles()
+        public async Task EnsureReadiness()
         {
             using (var dbContext = new FamilyAlbumDbContext(_albumDbPath))
             {
+                await dbContext.EnsureDatabaseIsUpgraded();
+            }
+        }
+
+        public List<string> GetDeletedFiles()
+        {
+            using (var dbContext = new FamilyAlbumDbContext(_albumDbPath))
+            {               
                 return dbContext.DeletedFiles.Select(f => f.RelativePath).ToList();
             }
         }
@@ -35,7 +44,8 @@ namespace bcfamilyalbum_db.Services
         {
             using(var dbContext = new FamilyAlbumDbContext(_albumDbPath))
             {
-                await dbContext.AddAsync(new DeletedFileInfo(relativePath));
+                await dbContext.DeletedFiles.AddAsync(new DeletedFileInfo(relativePath));
+                await dbContext.SaveChangesAsync();
             }
         }
 
@@ -43,7 +53,8 @@ namespace bcfamilyalbum_db.Services
         {
             using (var dbContext = new FamilyAlbumDbContext(_albumDbPath))
             {
-                await dbContext.AddAsync(new MovedFileInfo(from, to));
+                await dbContext.MovedFiles.AddAsync(new MovedFileInfo(from, to));
+                await dbContext.SaveChangesAsync();
             }
         }
     }
