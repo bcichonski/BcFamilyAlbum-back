@@ -16,5 +16,6 @@ namespace bcfamilyalbum_api.Interfaces
         string AlbumDbPath { get; }
 
         string GetRelativePath(string path);
+        Task<TreeItem> DeleteItem(int v);
     }
 }

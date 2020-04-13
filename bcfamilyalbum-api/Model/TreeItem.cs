@@ -40,5 +40,10 @@ namespace bcfamilyalbum_api.Model
             }
             Children.Add(child);
         }
+
+        internal virtual void MoveTo(string newPath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

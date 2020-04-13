@@ -13,6 +13,12 @@ namespace bcfamilyalbum_api
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .MinimumLevel.Verbose()
+            .WriteTo.Debug()
+            .CreateLogger();
+
             CreateHostBuilder(args).Build().Run();
         }
 

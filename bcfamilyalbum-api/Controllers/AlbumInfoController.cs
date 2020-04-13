@@ -34,7 +34,7 @@ namespace bcfamilyalbum_api.Controllers
         }
 
         [HttpGet]
-        public async Task<TreeItem> Get()
+        public async Task<ActionResult<TreeItem>> Get()
         {
             return await _albumInfoProvider.GetAlbumInfo();
         }
@@ -80,7 +80,7 @@ namespace bcfamilyalbum_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(string id)
         {
-            var item = await _albumInfoProvider.GetItem(int.Parse(id));
+            var item = await _albumInfoProvider.DeleteItem(int.Parse(id));
             if (item != null)
             {
                 await _dbService.MarkFileAsDeleted(_albumInfoProvider.GetRelativePath(item.FullPath));

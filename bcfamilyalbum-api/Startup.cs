@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace bcfamilyalbum_api
 {
@@ -47,9 +48,13 @@ namespace bcfamilyalbum_api
             }
 
             app.UseCors(builder =>
-                builder.WithOrigins("http://localhost:3000"));
+                builder.WithOrigins("http://localhost:3000","https://postwoman.io")
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

@@ -16,6 +16,7 @@ namespace bcfamilyalbum_api.Services
     public class AlbumInfoProvider : IAlbumInfoProvider
     {
         const string AlbumDbFileName = "album.db";
+        const string RemovedFilesDirectory = "trash";
         SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         TreeItem _albumInfoRoot;
         ConcurrentDictionary<int, TreeItem> _cache;
@@ -148,7 +149,7 @@ namespace bcfamilyalbum_api.Services
 
         public async Task<TreeItem> GetItem(int id)
         {
-            var info = await GetAlbumInfo();
+            await GetAlbumInfo();
             
             if(_cache.TryGetValue(id, out TreeItem node))
             {
@@ -160,6 +161,18 @@ namespace bcfamilyalbum_api.Services
         public string GetRelativePath(string path)
         {
             return Path.GetRelativePath(path, _albumRootPath);
+        }
+
+        public async Task<TreeItem> DeleteItem(int id)
+        {
+            var node = await GetItem(id);
+
+            if(node != null)
+            {
+                node.MoveTo(Path.Combine(_albumRootPath, RemovedFilesDirectory));
+            }
+
+            return null;
         }
     }
 }
