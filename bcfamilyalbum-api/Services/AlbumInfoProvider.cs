@@ -114,14 +114,33 @@ namespace bcfamilyalbum_api.Services
                         _logger.LogError(ex, $"Error enumerating subdirectories in {currentNode.FullPath}: {ex.Message}");
                     }
                 }
-
-                if(currentNode.Children?.Count == 0)
-                {
-                    currentNode.Parent.RemoveChild(currentNode);
-                }
             }
 
+            CutTheTree(tempRoot);
+
             _albumInfoRoot = tempRoot;
+        }
+
+        private void CutTheTree(TreeItem node)
+        {
+            var childrenCount = node.Children?.Count ?? 0;
+            if (childrenCount > 0)
+            {
+                foreach (var child in node.Children.ToList())
+                {
+                    if (child is DirectoryTreeItem)
+                    {
+                        CutTheTree(child);
+                    }
+                }
+
+                childrenCount = node.Children?.Count ?? 0;
+            }
+
+            if (childrenCount == 0 && node is DirectoryTreeItem)
+            {
+                node.Parent?.RemoveChild(node);
+            }
         }
 
         private int GetParentNodeId(Dictionary<string, TreeItem> cache, string currentDir)
@@ -154,8 +173,8 @@ namespace bcfamilyalbum_api.Services
         public async Task<TreeItem> GetItem(int id)
         {
             await GetAlbumInfo();
-            
-            if(_cache.TryGetValue(id, out TreeItem node))
+
+            if (_cache.TryGetValue(id, out TreeItem node))
             {
                 return node;
             }
@@ -171,7 +190,7 @@ namespace bcfamilyalbum_api.Services
         {
             var node = await GetItem(id);
 
-            if(node != null)
+            if (node != null)
             {
                 node.MoveTo(Path.Combine(_albumRootPath, RemovedFilesDirectory));
                 return node;
