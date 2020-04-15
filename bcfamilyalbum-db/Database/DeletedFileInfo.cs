@@ -6,7 +6,7 @@ namespace bcfamilyalbum_db
 {
     public class DeletedFileInfo : FileInfo
     {
-        public DateTime RemovalTimestamp { get; set; }
+        public DateTime? RemovalTimestamp { get; set; }
 
         public DeletedFileInfo() : base() { }
 

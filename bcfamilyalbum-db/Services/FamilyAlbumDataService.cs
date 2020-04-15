@@ -44,7 +44,10 @@ namespace bcfamilyalbum_db.Services
         {
             using(var dbContext = new FamilyAlbumDbContext(_albumDbPath))
             {
-                await dbContext.DeletedFiles.AddAsync(new DeletedFileInfo(relativePath));
+                await dbContext.DeletedFiles.AddAsync(new DeletedFileInfo(relativePath)
+                {
+                    RemovalTimestamp = DateTime.Now
+                });
                 await dbContext.SaveChangesAsync();
             }
         }
@@ -53,7 +56,10 @@ namespace bcfamilyalbum_db.Services
         {
             using (var dbContext = new FamilyAlbumDbContext(_albumDbPath))
             {
-                await dbContext.MovedFiles.AddAsync(new MovedFileInfo(from, to));
+                await dbContext.MovedFiles.AddAsync(new MovedFileInfo(from, to)
+                {
+                    MovingTimestamp = DateTime.Now
+                });
                 await dbContext.SaveChangesAsync();
             }
         }

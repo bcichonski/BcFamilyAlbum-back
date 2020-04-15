@@ -6,7 +6,7 @@ namespace bcfamilyalbum_db
 {
     public class MovedFileInfo : FileInfo
     {
-        public DateTime MovingTimestamp { get; set; }
+        public DateTime? MovingTimestamp { get; set; }
         public string OriginalRelativePath { get; set; }
 
         public MovedFileInfo() : base() { }

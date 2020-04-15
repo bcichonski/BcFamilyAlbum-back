@@ -78,7 +78,6 @@ namespace bcfamilyalbum_api.Services
             {
                 var currentNode = directoryQueue.Dequeue();
                 bool errorLogged = false;
-
                 try
                 {
                     var files = Directory.GetFiles(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
@@ -114,6 +113,11 @@ namespace bcfamilyalbum_api.Services
                     {
                         _logger.LogError(ex, $"Error enumerating subdirectories in {currentNode.FullPath}: {ex.Message}");
                     }
+                }
+
+                if(currentNode.Children?.Count == 0)
+                {
+                    currentNode.Parent.RemoveChild(currentNode);
                 }
             }
 

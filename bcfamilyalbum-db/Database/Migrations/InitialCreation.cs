@@ -25,7 +25,7 @@ namespace bcfamilyalbum_db.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false),
                     RelativePath = table.Column<string>(nullable: false),
-                    RemovalTimestamp = table.Column<DateTime>(nullable: false)
+                    RemovalTimestamp = table.Column<DateTime?>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,8 +39,8 @@ namespace bcfamilyalbum_db.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false),
                     RelativePath = table.Column<string>(nullable: false),
-                    OriginalRelativePath = table.Column<string>(nullable: false),
-                    RemovalTimestamp = table.Column<DateTime>(nullable: false)
+                    OriginalRelativePath = table.Column<string>(nullable: true),
+                    MovingTimestamp = table.Column<DateTime?>(nullable: true)
                 },
                 constraints: table =>
                 {

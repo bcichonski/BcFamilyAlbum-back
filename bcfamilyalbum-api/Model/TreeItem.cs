@@ -1,4 +1,5 @@
-﻿using System;
+﻿using bcfamilyalbum_api.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +45,11 @@ namespace bcfamilyalbum_api.Model
         internal virtual void MoveTo(string newPath)
         {
             throw new NotImplementedException();
+        }
+
+        internal void RemoveChild(TreeItem child)
+        {
+            Children.Remove(child);
         }
     }
 }
