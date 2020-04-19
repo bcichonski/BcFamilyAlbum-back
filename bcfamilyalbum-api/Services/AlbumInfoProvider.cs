@@ -17,6 +17,18 @@ namespace bcfamilyalbum_api.Services
     {
         const string AlbumDbFileName = "album.db";
         const string RemovedFilesDirectory = "trash";
+        static readonly HashSet<string> MediaExtensions = new HashSet<string>
+        {
+            ".jpg",
+            ".jpeg",
+            ".mp4",
+            ".avi",
+            ".mpg",
+            ".mpeg",
+            ".mkv",
+            ".m4v"
+        };
+
         SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         TreeItem _albumInfoRoot;
         ConcurrentDictionary<int, TreeItem> _cache;
@@ -83,12 +95,17 @@ namespace bcfamilyalbum_api.Services
                     var files = Directory.GetFiles(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
                     foreach (var filepath in files)
                     {
-                        var id = nextId++;
-                        _cache[id] = new FileTreeItem(
-                            id,
-                            currentNode,
-                            Path.GetFileName(filepath),
-                            filepath);
+                        var fileExt = Path.GetExtension(filepath).ToLower();
+
+                        if(MediaExtensions.Contains(fileExt))
+                        {
+                            var id = nextId++;
+                            _cache[id] = new FileTreeItem(
+                                id,
+                                currentNode,
+                                Path.GetFileName(filepath),
+                                filepath);
+                        }                  
                     }
                 }
                 catch (Exception ex)
