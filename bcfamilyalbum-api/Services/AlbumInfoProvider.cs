@@ -17,21 +17,10 @@ namespace bcfamilyalbum_api.Services
     {
         const string AlbumDbFileName = "album.db";
         const string RemovedFilesDirectory = "trash";
-        static readonly HashSet<string> MediaExtensions = new HashSet<string>
-        {
-            ".jpg",
-            ".jpeg",
-            ".mp4",
-            ".avi",
-            ".mpg",
-            ".mpeg",
-            ".mkv",
-            ".m4v"
-        };
 
         SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         TreeItem _albumInfoRoot;
-        ConcurrentDictionary<int, TreeItem> _cache;
+        ConcurrentDictionary<string, TreeItem> _cache;
         string _albumRootPath;
         ILogger<AlbumInfoProvider> _logger;
 
@@ -41,7 +30,7 @@ namespace bcfamilyalbum_api.Services
         {
             _logger = logger;
             _albumRootPath = config.GetValue<string>("AppSettings:AlbumRootPath");
-            _cache = new ConcurrentDictionary<int, TreeItem>();
+            _cache = new ConcurrentDictionary<string, TreeItem>();
 
             if (string.IsNullOrWhiteSpace(_albumRootPath))
             {
@@ -80,9 +69,8 @@ namespace bcfamilyalbum_api.Services
             _logger.LogInformation("Scanning album {_albumRootPath} structure", _albumRootPath);
             _cache.Clear();
             Queue<TreeItem> directoryQueue = new Queue<TreeItem>();
-            int nextId = 0;
 
-            var tempRoot = new DirectoryTreeItem(nextId++, null, "the album", _albumRootPath);
+            var tempRoot = new DirectoryTreeItem("\\", null, "the album", _albumRootPath);
             directoryQueue.Enqueue(tempRoot);
             _cache[tempRoot.Id] = tempRoot;
 
@@ -94,17 +82,16 @@ namespace bcfamilyalbum_api.Services
                 {
                     var files = Directory.GetFiles(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
                     foreach (var filepath in files)
-                    {
-                        var fileExt = Path.GetExtension(filepath).ToLower();
-
-                        if(MediaExtensions.Contains(fileExt))
+                    {                        
+                        if(MediaFileTreeItem.IsAnInstance(filepath))
                         {
-                            var id = nextId++;
-                            _cache[id] = new FileTreeItem(
-                                id,
+                            var relpath = Path.GetRelativePath(_albumRootPath, filepath);
+                            var item = MediaFileTreeItem.GetNew(
+                                relpath,
                                 currentNode,
                                 Path.GetFileName(filepath),
                                 filepath);
+                            _cache[item.Id] = item;
                         }                  
                     }
                 }
@@ -119,7 +106,8 @@ namespace bcfamilyalbum_api.Services
                     var directories = Directory.EnumerateDirectories(currentNode.FullPath, "*", SearchOption.TopDirectoryOnly);
                     foreach (var dir in directories)
                     {
-                        var childNode = new DirectoryTreeItem(nextId++, currentNode, dir);
+                        var relpath = Path.GetRelativePath(_albumRootPath, dir);
+                        var childNode = new DirectoryTreeItem(relpath, currentNode, dir);
                         _cache[childNode.Id] = childNode;
                         directoryQueue.Enqueue(childNode);
                     }
@@ -160,9 +148,9 @@ namespace bcfamilyalbum_api.Services
             }
         }
 
-        private int GetParentNodeId(Dictionary<string, TreeItem> cache, string currentDir)
+        private string GetParentNodeId(Dictionary<string, TreeItem> cache, string currentDir)
         {
-            var parentNodeId = -1;
+            var parentNodeId = "";
             if (currentDir != _albumRootPath)
             {
                 var parentDir = Path.GetFullPath(Path.Combine(currentDir, ".."));
@@ -187,7 +175,7 @@ namespace bcfamilyalbum_api.Services
             _cache = null;
         }
 
-        public async Task<TreeItem> GetItem(int id)
+        public async Task<TreeItem> GetItem(string id)
         {
             await GetAlbumInfo();
 
@@ -203,7 +191,7 @@ namespace bcfamilyalbum_api.Services
             return Path.GetRelativePath(_albumRootPath, path);
         }
 
-        public async Task<TreeItem> DeleteItem(int id)
+        public async Task<TreeItem> DeleteItem(string id)
         {
             var node = await GetItem(id);
 
@@ -214,6 +202,19 @@ namespace bcfamilyalbum_api.Services
             }
 
             return null;
+        }
+
+        public async Task RotateItem(string id)
+        {
+            var node = await GetItem(id);
+
+            if (node != null)
+            {
+                await node.Rotate();
+            } else
+            {
+                throw new Exception($"Item not found. Id: {id}");
+            }
         }
     }
 }

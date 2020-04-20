@@ -8,11 +8,11 @@ namespace bcfamilyalbum_api.Model
 {
     public class DirectoryTreeItem : TreeItem
     {
-        public DirectoryTreeItem(int id, TreeItem parent, string fullPath) : base(id, parent, GetDirectoryName(fullPath), fullPath)
+        public DirectoryTreeItem(string relativePath, TreeItem parent, string fullPath) : base(relativePath, parent, GetDirectoryName(fullPath), fullPath)
         {
         }
 
-        public DirectoryTreeItem(int id, TreeItem parent, string name, string fullPath) : base(id, parent, name, fullPath)
+        public DirectoryTreeItem(string relativePath, TreeItem parent, string name, string fullPath) : base(relativePath, parent, name, fullPath)
         {
         }
 

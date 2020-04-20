@@ -44,7 +44,7 @@ namespace bcfamilyalbum_api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItem(string id)
         {
-            var item = await _albumInfoProvider.GetItem(int.Parse(id));
+            var item = await _albumInfoProvider.GetItem(id);
             if (item != null)
             {
                 if (item is FileTreeItem)
@@ -57,30 +57,17 @@ namespace bcfamilyalbum_api.Controllers
 
                     return new PhysicalFileResult(item.FullPath, contentType)
                     {
-                        EnableRangeProcessing = IsVideoFile(item.FullPath)
+                        EnableRangeProcessing = VideoTreeItem.IsAnInstance(item.FullPath)
                     };
                 }
             }
             throw new Exception($"File {id} not found.");
         }
 
-        static readonly string[] _VideoFormats = new string[]
-        {
-            ".mp4",
-            ".avi",
-            ".mkv"
-        };
-
-        private bool IsVideoFile(string fullPath)
-        {
-            var ext = Path.GetExtension(fullPath).ToLowerInvariant();
-            return _VideoFormats.Any(v => v == ext);
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(string id)
         {
-            var item = await _albumInfoProvider.DeleteItem(int.Parse(id));
+            var item = await _albumInfoProvider.DeleteItem(id);
             if (item != null)
             {
                 await _dbService.EnsureReadiness();
@@ -88,6 +75,13 @@ namespace bcfamilyalbum_api.Controllers
                 return Ok();
             }
             throw new Exception($"File {id} not found.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RotateItem(AlbumInfoControllerFrontendPostCommand command)
+        {
+            await _albumInfoProvider.RotateItem(command.Id);
+            return Ok();
         }
     }
 }

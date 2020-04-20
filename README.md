@@ -2,7 +2,7 @@
 
 # Changelog
 ```
-0.3.2 2020-04-19          FIX Skip non-media files from album metadata
+0.3.2 2020-04-19          FIX Skip non-media files from album metadata, refactor and enhance model classes to add picture rotation
 0.3.1 2020-04-15 36dd0dcb FIX workaround some problems with storing not null default-valued timestamps in SQLite
                           remove empty directories from album data returning to the frontend
 0.3.0 2020-04-13 88d1cd3b FIX better CORS support, introduce DB migrations

@@ -11,11 +11,12 @@ namespace bcfamilyalbum_api.Interfaces
         Task<TreeItem> GetAlbumInfo();
 
         public void Invalidate();
-        Task<TreeItem> GetItem(int id);
+        Task<TreeItem> GetItem(string id);
 
         string AlbumDbPath { get; }
 
         string GetRelativePath(string path);
-        Task<TreeItem> DeleteItem(int v);
+        Task<TreeItem> DeleteItem(string id);
+        Task RotateItem(string id);
     }
 }

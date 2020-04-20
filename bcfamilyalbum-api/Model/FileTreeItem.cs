@@ -8,7 +8,7 @@ namespace bcfamilyalbum_api.Model
 {
     public class FileTreeItem : TreeItem
     {
-        public FileTreeItem(int id, TreeItem parent, string name, string fullPath) : base(id, parent, name, fullPath)
+        public FileTreeItem(string id, TreeItem parent, string name, string fullPath) : base(id, parent, name, fullPath)
         {
         }
 
