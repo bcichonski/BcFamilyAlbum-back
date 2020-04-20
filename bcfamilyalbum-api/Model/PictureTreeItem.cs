@@ -19,9 +19,9 @@ namespace bcfamilyalbum_api.Model
         {
         }
 
-        internal override Task Rotate()
+        internal override async Task Rotate()
         {
-            return Task.Run(() =>
+            await Task.Run(() =>
             {
                 using (var image = Image.Load(this.FullPath))
                 {

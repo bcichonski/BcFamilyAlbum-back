@@ -73,5 +73,10 @@ namespace bcfamilyalbum_api.Model
 
             return sBuilder.ToString();
         }
+
+        internal void SortChildren()
+        {
+            Children?.Sort((c1, c2) => c1.Name.CompareTo(c2.Name));
+        }
     }
 }

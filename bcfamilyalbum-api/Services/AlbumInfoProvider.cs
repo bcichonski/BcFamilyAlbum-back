@@ -119,6 +119,8 @@ namespace bcfamilyalbum_api.Services
                         _logger.LogError(ex, $"Error enumerating subdirectories in {currentNode.FullPath}: {ex.Message}");
                     }
                 }
+
+                currentNode.SortChildren();
             }
 
             CutTheTree(tempRoot);
