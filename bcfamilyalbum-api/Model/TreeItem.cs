@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace bcfamilyalbum_api.Model
 {
     public class TreeItem
     {
+        protected SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         protected TreeItem(string relative_path, TreeItem parent, string name, string fullPath)
         {
             Id = GetId(relative_path);
@@ -77,6 +80,16 @@ namespace bcfamilyalbum_api.Model
         internal void SortChildren()
         {
             Children?.Sort((c1, c2) => c1.Name.CompareTo(c2.Name));
+        }
+
+        public async Task Lock()
+        {
+            await _semaphore.WaitAsync();
+        }
+
+        public void Release()
+        {
+            _semaphore.Release();
         }
     }
 }

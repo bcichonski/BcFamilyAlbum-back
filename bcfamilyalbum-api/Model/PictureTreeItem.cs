@@ -21,12 +21,18 @@ namespace bcfamilyalbum_api.Model
 
         internal override async Task Rotate()
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                using (var image = Image.Load(this.FullPath))
+                try
                 {
+                    await this.Lock();
+                    using var image = Image.Load(this.FullPath);
                     image.Mutate(x => x.Rotate(RotateMode.Rotate90));
                     image.Save(this.FullPath);
+                }
+                finally
+                {
+                    this.Release();
                 }
             });
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using bcfamilyalbum_api.Extensions;
 using bcfamilyalbum_api.Interfaces;
 using bcfamilyalbum_api.Model;
 using bcfamilyalbum_db.Interfaces;
@@ -55,7 +56,7 @@ namespace bcfamilyalbum_api.Controllers
                         contentType = "application/octet-stream";
                     }
 
-                    return new PhysicalFileResult(item.FullPath, contentType)
+                    return new LockableTreeItemPhysicalFileResult(item, contentType)
                     {
                         EnableRangeProcessing = VideoTreeItem.IsAnInstance(item.FullPath)
                     };

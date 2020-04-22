@@ -2,6 +2,8 @@
 
 # Changelog
 ```
+0.3.3 2020-04-22          FIX Add some semaphors to prevent race condition between picture rotation and returning it to the frontend
+                          because both requires physical access to the picture file
 0.3.2 2020-04-19          FIX Skip non-media files from album metadata, refactor and enhance model classes to add picture rotation
 0.3.1 2020-04-15 36dd0dcb FIX workaround some problems with storing not null default-valued timestamps in SQLite
                           remove empty directories from album data returning to the frontend
