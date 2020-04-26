@@ -32,7 +32,7 @@ namespace bcfamilyalbum_api.Model
                 }
                 finally
                 {
-                    this.Release();
+                    this.ReleaseLock();
                 }
             });
         }

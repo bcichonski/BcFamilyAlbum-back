@@ -12,20 +12,33 @@ namespace bcfamilyalbum_api.Model
         {
         }
 
-        internal override void MoveTo(string newPath)
+        internal override async Task MoveTo(string newPath, TreeItem trashNode)
         {
-            if (!Directory.Exists(newPath))
+            try
             {
-                Directory.CreateDirectory(newPath);
-            }
-            var newName = Path.Combine(newPath, Path.GetFileName(this.FullPath));
+                await this.Lock();
+                if (!Directory.Exists(newPath))
+                {
+                    Directory.CreateDirectory(newPath);
+                }
+                var newFullPath = Path.Combine(newPath, Path.GetFileName(this.FullPath));
 
-            if(!File.Exists(newName))
+                if (!File.Exists(newFullPath))
+                {
+                    File.Move(this.FullPath, newFullPath);
+                    this.FullPath = newFullPath;
+                    this.Parent?.RemoveChild(this);
+                    trashNode.AddChild(this);
+                    return;
+                }
+                throw new Exception($"File {newFullPath} already exists");
+            } catch
             {
-                File.Move(this.FullPath, newName);
-                return;
+                throw;
+            } finally
+            {
+                this.ReleaseLock();
             }
-            throw new Exception($"File {newName} already exists");
         }
     }
 }

@@ -36,7 +36,7 @@ namespace bcfamilyalbum_api.Model
 
         public string Name { get; private set; }
 
-        internal string FullPath { get; private set; }
+        internal string FullPath { get; set; }
 
         public void AddChild(TreeItem child)
         {
@@ -47,7 +47,7 @@ namespace bcfamilyalbum_api.Model
             Children.Add(child);
         }
 
-        internal virtual void MoveTo(string newPath)
+        internal virtual Task MoveTo(string newPath, TreeItem trashNode)
         {
             throw new NotImplementedException();
         }
@@ -87,7 +87,7 @@ namespace bcfamilyalbum_api.Model
             await _semaphore.WaitAsync();
         }
 
-        public void Release()
+        public void ReleaseLock()
         {
             _semaphore.Release();
         }

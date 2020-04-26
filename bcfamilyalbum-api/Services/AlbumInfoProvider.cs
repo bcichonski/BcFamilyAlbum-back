@@ -20,6 +20,7 @@ namespace bcfamilyalbum_api.Services
 
         SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         TreeItem _albumInfoRoot;
+        TreeItem _albumTrash;
         ConcurrentDictionary<string, TreeItem> _cache;
         string _albumRootPath;
         ILogger<AlbumInfoProvider> _logger;
@@ -110,6 +111,10 @@ namespace bcfamilyalbum_api.Services
                         var childNode = new DirectoryTreeItem(relpath, currentNode, dir);
                         _cache[childNode.Id] = childNode;
                         directoryQueue.Enqueue(childNode);
+                        if(currentNode == tempRoot && childNode.Name == RemovedFilesDirectory)
+                        {
+                            _albumTrash = currentNode;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -198,8 +203,8 @@ namespace bcfamilyalbum_api.Services
             var node = await GetItem(id);
 
             if (node != null)
-            {
-                node.MoveTo(Path.Combine(_albumRootPath, RemovedFilesDirectory));
+            {          
+                await node.MoveTo(Path.Combine(_albumRootPath, RemovedFilesDirectory), _albumTrash);
                 return node;
             }
 

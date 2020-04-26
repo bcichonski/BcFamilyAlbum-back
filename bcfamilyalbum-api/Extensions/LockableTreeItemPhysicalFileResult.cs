@@ -35,7 +35,7 @@ namespace bcfamilyalbum_api.Extensions
                 await base.ExecuteResultAsync(context);
             } finally
             {
-                _undelyingItem.Release();
+                _undelyingItem.ReleaseLock();
             }
         }
     }

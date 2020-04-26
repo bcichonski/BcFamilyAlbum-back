@@ -2,6 +2,8 @@
 
 # Changelog
 ```
+0.3.4 2020-04-26          Small improvement, correctly refresh internal album structures after item removal. Lock file internaly before removing, 
+                          FIX an error when you try to delete video that is being streamed at the moment
 0.3.3 2020-04-22          FIX Add some semaphors to prevent race condition between picture rotation and returning it to the frontend
                           because both requires physical access to the picture file
 0.3.2 2020-04-19          FIX Skip non-media files from album metadata, refactor and enhance model classes to add picture rotation
