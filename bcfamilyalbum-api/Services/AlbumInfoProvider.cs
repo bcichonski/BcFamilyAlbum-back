@@ -155,27 +155,6 @@ namespace bcfamilyalbum_api.Services
             }
         }
 
-        private string GetParentNodeId(Dictionary<string, TreeItem> cache, string currentDir)
-        {
-            var parentNodeId = "";
-            if (currentDir != _albumRootPath)
-            {
-                var parentDir = Path.GetFullPath(Path.Combine(currentDir, ".."));
-                if (cache.TryGetValue(parentDir, out TreeItem parentNode))
-                {
-                    parentNodeId = parentNode.Id;
-                }
-                else
-                {
-                    _logger.LogWarning("Cannot find parent node for {currentDir}", currentDir);
-                }
-            }
-
-            return parentNodeId;
-        }
-
-
-
         public void Invalidate()
         {
             _albumInfoRoot = null;

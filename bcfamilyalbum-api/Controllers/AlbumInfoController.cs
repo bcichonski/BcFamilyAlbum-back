@@ -25,7 +25,7 @@ namespace bcfamilyalbum_api.Controllers
         readonly IFamilyAlbumDataService _dbService;
 
         public AlbumInfoController(
-            ILogger<AlbumInfoController> logger, 
+            ILogger<AlbumInfoController> logger,
             IAlbumInfoProvider albumInfoProvider,
             IFamilyAlbumDataService dbService)
         {
@@ -53,7 +53,14 @@ namespace bcfamilyalbum_api.Controllers
                     string contentType;
                     if (!_contentTypeProvider.TryGetContentType(Path.GetFileName(item.FullPath), out contentType))
                     {
-                        contentType = "application/octet-stream";
+                        if (Path.GetExtension(item.FullPath).ToLowerInvariant() == ".mkv")
+                        {
+                            contentType = "video/x-matroska";
+                        }
+                        else
+                        {
+                            contentType = "application/octet-stream";
+                        }
                     }
 
                     return new LockableTreeItemPhysicalFileResult(item, contentType)
@@ -82,6 +89,13 @@ namespace bcfamilyalbum_api.Controllers
         public async Task<IActionResult> RotateItem(AlbumInfoControllerFrontendPostCommand command)
         {
             await _albumInfoProvider.RotateItem(command.Id);
+            return Ok();
+        }
+
+        [HttpPatch]
+        public IActionResult Invalidate()
+        {
+            _albumInfoProvider.Invalidate();
             return Ok();
         }
     }

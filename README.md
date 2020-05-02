@@ -2,7 +2,8 @@
 
 # Changelog
 ```
-0.3.4 2020-04-26          Small improvement, correctly refresh internal album structures after item removal. Lock file internaly before removing, 
+0.3.5 2020-05-02          Add option to refresh the album cache
+0.3.4 2020-04-26 6924be45 Small improvement, correctly refresh internal album structures after item removal. Lock file internaly before removing, 
                           FIX an error when you try to delete video that is being streamed at the moment
 0.3.3 2020-04-22          FIX Add some semaphors to prevent race condition between picture rotation and returning it to the frontend
                           because both requires physical access to the picture file
